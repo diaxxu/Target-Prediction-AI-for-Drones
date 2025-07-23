@@ -11,7 +11,3 @@ This logic is used in drones, missiles, and aircraft guidance.
 2. Watch the target move
 3. See real-time predictions
 
-## Bonus
-- Add GPS noise to test the filter
-- Export data
-- Try nonlinear movement
