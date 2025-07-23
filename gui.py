@@ -19,7 +19,6 @@ class TrackerGUI:
         self.running = True
         self.step_index = 0
 
-        # Initialize plot
         self.fig, self.ax = plt.subplots(figsize=(8, 6))
         self.true_line, = self.ax.plot([], [], label="True Path", color="green")
         self.measured_line, = self.ax.plot([], [], label="Measured", color="red", linestyle="--", alpha=0.5)
@@ -41,23 +40,21 @@ class TrackerGUI:
         if not self.running or self.step_index >= self.max_steps:
             return self.true_line, self.measured_line, self.estimated_line, self.status_text
 
-        # Simulate target
         data = self.sim.step()
         measurement = data["measured"]
         true = data["true"]
 
-        # Kalman Filter step
+        # Kalman Filter
         self.kf.predict()
         self.kf.update(measurement)
         estimate = self.kf.get_current_state()
 
-        # Store paths
+        # paths
         self.true_path.append(true)
         self.measured_path.append(measurement)
         self.estimated_path.append(estimate[:2])
         self.step_index += 1
 
-        # Convert to numpy arrays for plotting
         tp = np.array(self.true_path)
         mp = np.array(self.measured_path)
         ep = np.array(self.estimated_path)
@@ -66,12 +63,12 @@ class TrackerGUI:
         self.measured_line.set_data(mp[:, 0], mp[:, 1])
         self.estimated_line.set_data(ep[:, 0], ep[:, 1])
 
-        # Status message
+ 
         error = np.linalg.norm(estimate[:2] - true)
         lock_status = "LOCKED ✅" if error < 3.0 else "Tracking..."
         self.status_text.set_text(f"Step: {self.step_index}\nError: {error:.2f} m\nStatus: {lock_status}")
 
-        # Autoscale
+
         self.ax.relim()
         self.ax.autoscale_view()
 
